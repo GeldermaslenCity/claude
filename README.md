@@ -1,5 +1,8 @@
 # ABYSSAL SIGNAL
 
+> This repo also contains **DEAD COURTYARD**, a 3D first-person zombie survival game built with
+> Three.js. See [`courtyard/README.md`](courtyard/README.md) for how to run it.
+
 A 2D side-view submarine mining and survival-horror game for the browser. You pilot a small
 mining submarine under the ice of an alien ocean. You mine ore in the dark, sell it at Anchor
 Station and upgrade the sub so it can dive deeper, while something enormous listens below.

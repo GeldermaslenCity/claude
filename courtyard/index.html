@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dead Courtyard</title>
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">
+  { "imports": { "three": "./vendor/three/three.module.js" } }
+</script>
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div id="hud" class="hidden">
+  <div id="vignette"></div>
+  <div id="crosshair"><i></i><i></i><i></i><i></i></div>
+  <div id="hitmarker"></div>
+  <div id="banner"></div>
+  <div id="subbanner"></div>
+  <div id="hint"></div>
+  <div id="reload"><div id="reload-fill"></div></div>
+
+  <div id="top">
+    <div id="zleft">Zombies <b>0</b></div>
+  </div>
+
+  <div id="bl">
+    <div id="round">1</div>
+    <div id="points-wrap"><span id="points">0</span><div id="popups"></div></div>
+  </div>
+
+  <div id="health">
+    <div id="health-bar"><div id="health-fill"></div></div>
+    <div id="health-text">100</div>
+  </div>
+
+  <div id="br">
+    <div id="weapon-name">M9 Pistol</div>
+    <div id="ammo"><span id="mag">10</span><span id="reserve">/ 80</span></div>
+  </div>
+</div>
+
+<!-- Start menu -->
+<div id="menu" class="overlay">
+  <div class="panel">
+    <h1>DEAD <span>COURTYARD</span></h1>
+    <p class="tag">Hold the courtyard. Survive the rounds.</p>
+    <button id="btn-play" class="big">Play</button>
+    <div class="controls">
+      <div><kbd>W A S D</kbd> Move</div>
+      <div><kbd>Mouse</kbd> Look / aim</div>
+      <div><kbd>Left click</kbd> Shoot</div>
+      <div><kbd>R</kbd> Reload</div>
+      <div><kbd>Shift</kbd> Sprint</div>
+      <div><kbd>Space</kbd> Jump</div>
+      <div><kbd>V</kbd> / <kbd>F</kbd> Melee</div>
+      <div><kbd>1</kbd> <kbd>2</kbd> / <kbd>Q</kbd> Switch weapon</div>
+      <div><kbd>Esc</kbd> Pause</div>
+    </div>
+    <div class="settings">
+      <label>Mouse sensitivity <input type="range" id="sens" min="0.2" max="3" step="0.05" value="1"><output id="sens-out">1.00</output></label>
+      <label>Volume <input type="range" id="vol" min="0" max="1" step="0.05" value="0.6"><output id="vol-out">60%</output></label>
+    </div>
+    <p id="best" class="muted"></p>
+  </div>
+</div>
+
+<!-- Pause -->
+<div id="pause" class="overlay hidden">
+  <div class="panel small">
+    <h2>Paused</h2>
+    <button id="btn-resume" class="big">Resume</button>
+    <p id="lock-msg" class="muted">Click Resume to recapture the mouse.</p>
+    <div class="settings">
+      <label>Mouse sensitivity <input type="range" id="sens2" min="0.2" max="3" step="0.05" value="1"></label>
+      <label>Volume <input type="range" id="vol2" min="0" max="1" step="0.05" value="0.6"></label>
+    </div>
+    <button id="btn-restart-pause">Restart</button>
+    <button id="btn-quit">Quit to menu</button>
+  </div>
+</div>
+
+<!-- Between-round shop -->
+<div id="shop" class="overlay hidden">
+  <div class="panel wide">
+    <div class="shop-head">
+      <h2>Round <span id="shop-round">1</span> survived</h2>
+      <div class="shop-points">Points: <b id="shop-points">0</b></div>
+    </div>
+    <p class="muted">Buy upgrades before the next wave. Next round starts in <b id="shop-timer">30</b>s.</p>
+    <div id="shop-items"></div>
+    <button id="btn-next" class="big">Start round <span id="shop-next">2</span></button>
+  </div>
+</div>
+
+<!-- Game over -->
+<div id="gameover" class="overlay hidden">
+  <div class="panel small">
+    <h1 class="dead">YOU DIED</h1>
+    <p class="tag">You survived <b id="go-rounds">0</b> rounds</p>
+    <div class="stats" id="go-stats"></div>
+    <button id="btn-restart" class="big">Play again</button>
+    <button id="btn-menu">Main menu</button>
+  </div>
+</div>
+
+<div id="nowebgl" class="overlay hidden"><div class="panel small"><h2>WebGL unavailable</h2><p>This game needs a browser with WebGL enabled.</p></div></div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
