@@ -9,19 +9,38 @@ internet connection needed.
 
 ## Running the game
 
-The game uses JavaScript modules, which browsers will not load from `file://`. Serve the
-folder with any static web server:
+**Easiest:** open the `courtyard` folder and double-click `index.html`. It opens in your
+browser (Chrome, Edge or Firefox). Click **Play**. The game captures the mouse; press **Esc**
+to release it and pause.
+
+Keep `index.html`, `game.bundle.js` and the `css/` folder together. If you only copy
+`index.html` somewhere else, the game can't load.
+
+**Optional: use a local server.** This works the same way:
 
 ```bash
 cd courtyard
-python3 -m http.server 8000
-# then open http://localhost:8000 in Chrome, Edge or Firefox
+python3 -m http.server 8000     # or: npm start
+# then open http://localhost:8000
 ```
 
-If you don't have Python, any static server works, for example `npx http-server -p 8000`.
+### Editing the code
 
-Click **Play**. The game captures the mouse (pointer lock). Press **Esc** to release it and
-pause.
+The browser runs `game.bundle.js`, which is built from the files in `js/` and the bundled
+Three.js. After changing anything in `js/`, rebuild it:
+
+```bash
+cd courtyard
+npm install      # once, installs esbuild
+npm run build    # or `npm run watch` to rebuild on every save
+```
+
+### If clicking Play does nothing
+
+- Make sure `game.bundle.js` is in the same folder as `index.html`.
+- Check that WebGL is enabled. Visit `chrome://gpu` in Chrome or `about:support` in Firefox,
+  or try another browser.
+- Press F12 and look at the Console tab for red errors.
 
 ## Controls
 
@@ -80,6 +99,8 @@ All balance numbers live in `js/config.js`.
 ```
 courtyard/
 ├── index.html          HUD, menus, shop and game-over markup
+├── game.bundle.js      Built game (js/ + Three.js in one file); run `npm run build` to regenerate
+├── package.json        build / watch / start scripts
 ├── css/style.css
 ├── js/
 │   ├── main.js         Game loop, round flow, shop, screens, scoring
@@ -131,6 +152,7 @@ cd courtyard
 python3 -m http.server 8000 &
 npm install playwright        # once; or reuse a global install via NODE_PATH=$(npm root -g)
 node tests/playtest.cjs       # URL=... and OUT=<screenshot dir> are optional
+                              # (works with URL=file://$PWD/index.html too)
 ```
 
 The test opens the page with `?test`. That mode skips the pointer-lock requirement so a script

@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dead Courtyard</title>
 <link rel="stylesheet" href="css/style.css">
-<script type="importmap">
-  { "imports": { "three": "./vendor/three/three.module.js" } }
-</script>
 </head>
 <body>
 <canvas id="game"></canvas>
@@ -107,6 +104,14 @@
 
 <div id="nowebgl" class="overlay hidden"><div class="panel small"><h2>WebGL unavailable</h2><p>This game needs a browser with WebGL enabled.</p></div></div>
 
-<script type="module" src="js/main.js"></script>
+<!-- game.bundle.js is built from js/ (see README). It is a classic script so the game also
+     runs when index.html is opened directly from disk. -->
+<script src="game.bundle.js"></script>
+<script>
+  if (!window.game) {
+    document.getElementById('menu').innerHTML = '<div class="panel small"><h2>The game failed to load</h2>' +
+      '<p>Make sure <b>game.bundle.js</b> is next to index.html and that WebGL is enabled in your browser, then reload.</p></div>';
+  }
+</script>
 </body>
 </html>
