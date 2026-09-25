@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ABYSSAL SIGNAL</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="game-root">
+  <canvas id="game"></canvas>
+
+  <!-- ============ HUD ============ -->
+  <div id="hud" class="hidden">
+    <div id="hud-topleft" class="panel">
+      <div class="depth-row"><span id="hud-depth">0</span><small>m</small></div>
+      <div id="hud-zone">Anchor Station</div>
+      <div id="hud-rating">CRUSH DEPTH 1100 m</div>
+    </div>
+
+    <div id="hud-objective" class="panel">
+      <div class="label">OBJECTIVE</div>
+      <div id="hud-objective-text"></div>
+    </div>
+
+    <div id="hud-topright" class="panel">
+      <div class="meter-row"><label>NOISE</label><div class="meter"><div id="hud-noise" class="fill"></div></div></div>
+      <div class="meter-row"><label>SIGNAL</label><div class="meter"><div id="hud-signal" class="fill sig"></div></div></div>
+      <div id="hud-status"></div>
+    </div>
+
+    <div id="hud-messages"></div>
+    <div id="hud-prompt" class="hidden"></div>
+    <div id="hud-tutorial" class="panel hidden"><div class="label">TRAINING</div><div id="hud-tutorial-text"></div></div>
+
+    <div id="hud-gauges" class="panel">
+      <div class="gauge" data-g="hull"><span class="g-label">HULL</span><div class="g-bar"><div class="g-fill"></div></div><span class="g-val"></span></div>
+      <div class="gauge" data-g="oxygen"><span class="g-label">O₂</span><div class="g-bar"><div class="g-fill"></div></div><span class="g-val"></span></div>
+      <div class="gauge" data-g="battery"><span class="g-label">BATT</span><div class="g-bar"><div class="g-fill"></div></div><span class="g-val"></span></div>
+      <div class="gauge" data-g="fuel"><span class="g-label">FUEL</span><div class="g-bar"><div class="g-fill"></div></div><span class="g-val"></span></div>
+      <div class="gauge" data-g="cargo"><span class="g-label">CARGO</span><div class="g-bar"><div class="g-fill"></div></div><span class="g-val"></span></div>
+      <div class="g-extra"><span id="hud-flares"></span><span id="hud-shock"></span><span id="hud-credits"></span></div>
+    </div>
+
+    <div id="hud-sonar" class="panel">
+      <canvas id="sonar-canvas" width="260" height="260"></canvas>
+      <div id="sonar-label">SONAR</div>
+    </div>
+    <div id="hud-fps" class="hidden"></div>
+  </div>
+
+  <!-- ============ SCREENS ============ -->
+  <div id="screen-title" class="screen">
+    <div class="title-block">
+      <div class="title-sub">HALVORSEN-MBEKI DEEP EXTRACTION · CONTRACT 7741</div>
+      <h1>ABYSSAL<span>SIGNAL</span></h1>
+      <div class="title-tag">Something below the Kharon Sea is transmitting.</div>
+      <div class="menu">
+        <button class="btn" id="btn-continue">CONTINUE</button>
+        <button class="btn primary" id="btn-new">NEW EXPEDITION</button>
+        <button class="btn" id="btn-howto">HOW TO PLAY</button>
+        <button class="btn" id="btn-settings">SETTINGS</button>
+      </div>
+      <div class="title-foot">Best experienced with headphones. Click anywhere to enable audio.</div>
+    </div>
+  </div>
+
+  <div id="screen-howto" class="screen hidden">
+    <div class="modal wide">
+      <h2>PILOT BRIEFING</h2>
+      <div class="howto-grid">
+        <div>
+          <h3>CONTROLS</h3>
+          <table class="keys">
+            <tr><td>W A S D</td><td>Steer the submarine</td></tr>
+            <tr><td>Mouse</td><td>Aim floodlight &amp; mining laser</td></tr>
+            <tr><td>Left click (hold)</td><td>Mining laser</td></tr>
+            <tr><td>Right click</td><td>Launch decoy flare</td></tr>
+            <tr><td>Space</td><td>Sonar ping</td></tr>
+            <tr><td>F</td><td>Toggle floodlight</td></tr>
+            <tr><td>Shift (hold)</td><td>Silent running</td></tr>
+            <tr><td>R</td><td>Shock pulse (upgrade)</td></tr>
+            <tr><td>E</td><td>Dock / interact (hold to repair)</td></tr>
+            <tr><td>Tab / M</td><td>Sonar map</td></tr>
+            <tr><td>Esc / P</td><td>Pause</td></tr>
+          </table>
+        </div>
+        <div>
+          <h3>SURVIVAL</h3>
+          <ul>
+            <li><b>Hull</b> breaks on hard collisions, bites and pressure below your crush depth.</li>
+            <li><b>Oxygen</b> drains constantly. Get home before it runs out.</li>
+            <li><b>Battery</b> powers lights, sonar, laser and the shock pulse.</li>
+            <li><b>Fuel</b> drives the engine. Empty tanks fall back to weak battery propulsion.</li>
+            <li><b>Cargo</b> is limited. If you are destroyed you lose most of it.</li>
+          </ul>
+          <h3>THE DARK</h3>
+          <ul>
+            <li>Sonar pings reveal the cave and nearby contacts — but everything hears them.</li>
+            <li>Light attracts small predators. Stalkers hate being lit. Anglers hunt by vibration.</li>
+            <li>Mining, fast movement and pinging raise your <b>NOISE</b>.</li>
+            <li>Something very large lives below 925&nbsp;m. It cannot be killed. Go quiet, go dark, or give it a flare.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-foot"><button class="btn primary" data-close>BACK</button></div>
+    </div>
+  </div>
+
+  <div id="screen-settings" class="screen hidden">
+    <div class="modal">
+      <h2>SETTINGS</h2>
+      <div class="settings">
+        <label>Master volume <input type="range" min="0" max="1" step="0.05" data-set="master"></label>
+        <label>Effects volume <input type="range" min="0" max="1" step="0.05" data-set="sfx"></label>
+        <label>Ambience volume <input type="range" min="0" max="1" step="0.05" data-set="ambient"></label>
+        <label>Brightness <input type="range" min="0.7" max="1.5" step="0.05" data-set="brightness"></label>
+        <label class="check">Screen shake <input type="checkbox" data-set="shake"></label>
+        <label class="check">Film grain <input type="checkbox" data-set="grain"></label>
+        <label class="check">Tutorial hints <input type="checkbox" data-set="tutorial"></label>
+        <label class="check">Show FPS <input type="checkbox" data-set="showFps"></label>
+        <label>Render resolution
+          <select data-set="quality">
+            <option value="low">Pixel (540p)</option>
+            <option value="high">Sharp (720p)</option>
+          </select>
+        </label>
+      </div>
+      <div class="modal-foot"><button class="btn danger" id="btn-wipe">DELETE SAVE</button><button class="btn primary" data-close>BACK</button></div>
+    </div>
+  </div>
+
+  <div id="screen-pause" class="screen hidden">
+    <div class="modal narrow">
+      <h2>PAUSED</h2>
+      <div class="menu">
+        <button class="btn primary" id="btn-resume">RESUME</button>
+        <button class="btn" id="btn-save">SAVE GAME</button>
+        <button class="btn" id="btn-pause-howto">HOW TO PLAY</button>
+        <button class="btn" id="btn-pause-settings">SETTINGS</button>
+        <button class="btn danger" id="btn-quit">SAVE &amp; QUIT TO TITLE</button>
+      </div>
+      <div id="pause-stats" class="small-stats"></div>
+    </div>
+  </div>
+
+  <div id="screen-station" class="screen hidden">
+    <div class="station-frame">
+      <header>
+        <div>
+          <h2>ANCHOR STATION</h2>
+          <div class="st-sub">Docking clamp engaged · Oxygen and battery replenished</div>
+        </div>
+        <div class="credits">₵ <span id="st-credits">0</span></div>
+      </header>
+      <nav class="tabs">
+        <button data-tab="market">MARKET</button>
+        <button data-tab="services">SERVICES</button>
+        <button data-tab="upgrades">UPGRADES</button>
+        <button data-tab="missions">MISSIONS</button>
+        <button data-tab="logs">LOGS</button>
+      </nav>
+      <section id="st-content"></section>
+      <footer>
+        <div id="st-status"></div>
+        <button class="btn primary" id="st-launch">LAUNCH ▼</button>
+      </footer>
+    </div>
+  </div>
+
+  <div id="screen-gameover" class="screen hidden">
+    <div class="modal narrow gameover">
+      <h2 id="go-title">CONTACT LOST</h2>
+      <div id="go-cause"></div>
+      <div id="go-details"></div>
+      <div class="menu">
+        <button class="btn primary" id="btn-relaunch">RELAUNCH FROM ANCHOR STATION</button>
+        <button class="btn" id="btn-go-title">QUIT TO TITLE</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-ending" class="screen hidden">
+    <div class="ending-text">
+      <div id="ending-body"></div>
+      <div class="menu">
+        <button class="btn primary" id="btn-end-continue">KEEP DIVING</button>
+        <button class="btn" id="btn-end-title">RETURN TO TITLE</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-map" class="screen hidden">
+    <div class="map-frame">
+      <div class="map-head"><h2>SONAR MAP</h2><span>TAB / M to close · the world keeps moving</span></div>
+      <canvas id="map-canvas"></canvas>
+    </div>
+  </div>
+
+  <div id="screen-log" class="screen hidden">
+    <div class="modal log">
+      <div class="log-kicker">RECOVERED RECORD</div>
+      <h2 id="log-title"></h2>
+      <div id="log-body"></div>
+      <div class="modal-foot"><button class="btn primary" id="log-close">CLOSE [E]</button></div>
+    </div>
+  </div>
+
+  <div id="screen-confirm" class="screen hidden">
+    <div class="modal narrow">
+      <h2 id="confirm-title">CONFIRM</h2>
+      <p id="confirm-text"></p>
+      <div class="modal-foot"><button class="btn" id="confirm-no">CANCEL</button><button class="btn danger" id="confirm-yes">CONFIRM</button></div>
+    </div>
+  </div>
+</div>
+
+<script src="js/util.js"></script>
+<script src="js/config.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/input.js"></script>
+<script src="js/save.js"></script>
+<script src="js/world.js"></script>
+<script src="js/structures.js"></script>
+<script src="js/particles.js"></script>
+<script src="js/lighting.js"></script>
+<script src="js/sonar.js"></script>
+<script src="js/submarine.js"></script>
+<script src="js/creatures.js"></script>
+<script src="js/warden.js"></script>
+<script src="js/missions.js"></script>
+<script src="js/atmosphere.js"></script>
+<script src="js/hud.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/game.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
